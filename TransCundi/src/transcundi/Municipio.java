@@ -7,21 +7,19 @@ public class Municipio {
 	
     private double latitud;         
     private double longitud;
-    protected ListaDinamica<Integer> tiempo;        
-    protected ListaDinamica<Municipio> referencias;
+    protected ListaDinamica<MunicipioVecino> referencias;
     protected ListaDinamica<Ruta> rutas;
+    protected ListaDinamica<Terminal> terminales;
     
     public Municipio(String municipio){
         this.nombre=municipio.toUpperCase();
-        this.referencias= new ListaDinamica<Municipio>(5);
-        this.tiempo= new ListaDinamica<Integer>(10);
-        this.rutas= new ListaDinamica<Ruta>(10);
+        this.referencias= new ListaDinamica<MunicipioVecino>(10);
+        this.rutas= new ListaDinamica<Ruta>(1000);
         
     }
     public Municipio(String municipio,int x){
         this.nombre=municipio.toUpperCase();
-        this.referencias= new ListaDinamica<Municipio>(x);
-        this.tiempo = new ListaDinamica<Integer>(x);
+        this.referencias= new ListaDinamica<MunicipioVecino>(x);
         this.rutas= new ListaDinamica<Ruta>(x);
     }
     
@@ -34,22 +32,6 @@ public class Municipio {
     }
     public void setNombre(String x){
         this.nombre =x.toUpperCase();
-    }
-    public void setreferencia(Municipio x,int ind){
-    	if (ind>=referencias.getLen()){throw new RuntimeException("indice de referencia excedido");}
-    	referencias.setElemento(ind,x);
-    }
-    
-    public void agregarReferencia(Municipio x){
-    	referencias.agregar(x);
-    }
-    
-    public void agregarTiempo(int x){
-    	tiempo.agregar(x);
-    }
-    
-    public void settiempo(Municipio x,int dato){
-    	tiempo.setElemento(referencias.getIndice(x), dato);
     }
     
     //getters
@@ -68,14 +50,6 @@ public class Municipio {
     public String getNombre(){
         return this.nombre;
     }
-    public Municipio getreferencia(int ind){
-    	if (ind>=referencias.getLen()){throw new RuntimeException("indice de referencia excedido");}
-        return this.referencias.getElemento(ind);
-    }
-    
-    public int gettiempo(Municipio x){
-    	return tiempo.getElemento(referencias.getIndice(x));
-    }
     
     public void agregarRuta(){
     	
@@ -83,35 +57,17 @@ public class Municipio {
     
     static void conectar(Municipio x,Municipio y){
     	for (int i=0;i<x.referencias.getLen();i++) {
-			if(x.referencias.getElemento(i) ==y ){
-				return;
-        	}else if(x.referencias.getElemento(i) ==null || i==x.referencias.getNumeroElementos()-1){
-        		x.agregarReferencia(y);
+    		if(x.referencias.getElemento(i) ==null || i==x.referencias.getLen()-1){
+        		x.referencias.agregar(new MunicipioVecino(y));
         		break;
-        	} 
-        }for (int i=0;i<y.referencias.getLen();i++) {
-			if(y.referencias.getElemento(i) ==x){
-        		break;
-        	}else if(y.referencias.getElemento(i) ==null || i==y.referencias.getNumeroElementos()-1){
-        		y.agregarReferencia(x);
-        		break;
+    		}else if(x.referencias.getElemento(i).getMunicipio() == y ){
+    			return;
         	}
-        }
-    }
-    
-    static void conectar(Municipio x,Municipio y, int tiempo){
-    	for (int i=0;i<x.referencias.getLen();i++) {
-			if(x.referencias.getElemento(i) ==y ){
-				return;
-        	}else if(x.referencias.getElemento(i) ==null || i==x.referencias.getNumeroElementos()-1){
-        		x.agregarReferencia(y);
-        		x.agregarTiempo(tiempo);
-        		break;
-        	} 
         }for (int i=0;i<y.referencias.getLen();i++) {
-			if(y.referencias.getElemento(i) ==null || i==y.referencias.getNumeroElementos()-1){
-        		y.agregarReferencia(x);
-        		y.agregarTiempo(tiempo);
+			if(y.referencias.getElemento(i) ==null || i==y.referencias.getLen()-1){
+        		y.referencias.agregar(new MunicipioVecino(x));
+        		break;
+        	}else if(y.referencias.getElemento(i).getMunicipio() ==x){
         		break;
         	}
         }
@@ -120,12 +76,12 @@ public class Municipio {
     static void desconetar(Municipio x,Municipio y) {
     	boolean si=false;
 		for (int i=0;i<x.referencias.getLen();i++) {
-			if(x.referencias.getElemento(i) ==y ){
+			if(x.referencias.getElemento(i).getMunicipio() ==y ){
 				si=true;
         	}
         }if (!si) {
 			for (int i=0;i<y.referencias.getLen();i++) {
-				if(y.referencias.getElemento(i) ==x){
+				if(y.referencias.getElemento(i).getMunicipio() ==x){
 	        		break;
 	        	}
 	        }
@@ -144,11 +100,11 @@ public class Municipio {
         if(latitud !=0.0){
             cadena=cadena+", Latitud:"+String.valueOf(this.latitud);
         }
-        if(getNumeroReferencias()>0){
+        if(referencias.getNumeroElementos()>0){
             cadena=cadena+"\n\tLIMITES:\n\t";
-            for (int i=0;i<referencias.getLen();i++) {
-            	if(referencias.getElemento(i) !=null ){
-            	cadena=cadena+(i+1)+". "+referencias.getElemento(i).getNombre().replaceAll("_", " ")+"\n\t";
+            for (int i=0;i<referencias.getNumeroElementos();i++) {
+            	if(referencias.getElemento(i)!=null ){
+            	cadena=cadena+(i+1)+". "+referencias.getElemento(i).getMunicipio().getNombre().replaceAll("_", " ")+"\n\t";
             	}else{
             		break;
             	}

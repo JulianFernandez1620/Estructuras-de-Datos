@@ -1,18 +1,14 @@
 package transcundi;
 
 import estructuras.*;
-import java.util.Timer;
-
-public class Ruta {
+public class Ruta{
 	private String nombre;
 	private int minima;
 	private int horaInicio;
 	private int horaFinal;
 	private Empresa empresa;
-	protected ListaEnlazada<Municipio> paradas;
-	protected ListaDinamica<SubRuta> subRutas;
-	protected ColaEnlazada<Vehiculo> buses;
-	protected ListaDinamica<Timer> horarios;
+	protected ListaEnlazada<SubRuta> paradas;
+	protected ColaEnlazada<Vehiculo> vehiculosEnRuta;
 	/*
 	private double latitudMax;
 	private double latitudMin;
@@ -22,25 +18,19 @@ public class Ruta {
 	
 	public Ruta(Empresa empresa){
         this.empresa=empresa;
-        paradas= new ListaEnlazada<Municipio>();
-    	subRutas= new ListaDinamica<SubRuta>();
-    	buses= new ColaEnlazada<Vehiculo> ();
-    	horarios= new ListaDinamica<Timer>();
+        paradas= new ListaEnlazada<SubRuta>();
     }
 	
 	public Ruta(String nombre,Empresa empresa){
         this.empresa=empresa;
         this.nombre=nombre;
-        paradas= new ListaEnlazada<Municipio>();
-    	subRutas= new ListaDinamica<SubRuta>();
-    	buses= new ColaEnlazada<Vehiculo> ();
-    	horarios= new ListaDinamica<Timer>();
+        paradas= new ListaEnlazada<SubRuta>();
     }
 	//getters
 		public String getNombre() {
 			return nombre;
 		}
-	
+
 		public int getMinima(){
 			return minima;
 		}
@@ -57,21 +47,8 @@ public class Ruta {
 			return empresa;
 		}
 		
-		public ListaEnlazada<Municipio> getParadas() {
+		public ListaEnlazada<SubRuta> getParadas() {
 			return paradas;
-		}
-		
-		public ListaDinamica<SubRuta> getValores() {
-			return subRutas;
-		}
-	
-		public int getValorEspecifico (String comienza, String fin) {
-			for (int i=0;i<subRutas.getNumeroElementos();i++) {
-				if(subRutas.getElemento(i).getComienzo().equals(comienza) && subRutas.getElemento(i).getComienzo().equals(fin)) {
-					return subRutas.getElemento(i).getCosto();
-				}
-			}
-			return 0;
 		}
 	
 	
@@ -96,58 +73,92 @@ public class Ruta {
 			this.empresa = empresa;
 		}
 	
-		public void setParadas(ListaEnlazada<Municipio> paradas) {
+		public void setParadas(ListaEnlazada<SubRuta> paradas) {
 			this.paradas = paradas;
 		}
 		
-		public void setValores(ListaDinamica<SubRuta> valores) {
-			this.subRutas = valores;
-		}
-		
-		public void setValorEspecifico (String comienza, String fin, int valor) {
-			for (int i=0;i<subRutas.getNumeroElementos();i++) {
-				if(subRutas.getElemento(i).getComienzo().equals(comienza) && subRutas.getElemento(i).getComienzo().equals(fin)) {
-					subRutas.getElemento(i).setCosto(valor);
-				}
-			}
-		}
-		
 	public void nombrar() {
-			this.nombre = paradas.getHeadDato().getNombre()+"->"+paradas.getTailDato().getNombre();
+			this.nombre = paradas.getHeadDato().getMunicipio().getNombre()+"->"+paradas.getTailDato().getMunicipio().getNombre();
 	}
 	
 	public boolean esta(Municipio x) {
-		Nodo<Municipio> miNodo=paradas.getHead();
+		Nodo<SubRuta> miNodo=paradas.getHead();
 		do {
-			if(miNodo.dato==x) {return true;}
+			if(miNodo.dato.getMunicipio()==x) {return true;}
 		}while((miNodo=miNodo.next)!=null);
 		return false;
 	}
 	
-	public String ruta() {
-		Nodo<Municipio> x=paradas.getHead();
-		String cadena= x.dato.getNombre()+" ";
+	public Ruta esta(Municipio x,Municipio y) {
+		Nodo<SubRuta> miNodo=paradas.getHead();
+		Ruta miRuta = new Ruta(nombre, empresa);
+		SubRuta menos=null;
+		boolean si=false;
+		do {
+			if(miNodo.dato.getMunicipio()==x) {menos=miNodo.dato;miRuta.paradas.agregarTail(new SubRuta(x,0,0,0));si=true;
+			}
+			else if (si) {
+				if(miNodo.dato.getMunicipio()==y){
+					miRuta.paradas.agregarTail(new SubRuta(y,(miNodo.dato.getCosto()-menos.getCosto()),(miNodo.dato.getTiempo()-menos.getTiempo()),(miNodo.dato.getDistancia()-menos.getDistancia())));
+					return miRuta;
+				}else {
+					miRuta.paradas.agregarTail(new SubRuta(miNodo.dato.getMunicipio(),(miNodo.dato.getCosto()-menos.getCosto()),(miNodo.dato.getTiempo()-menos.getTiempo()),(miNodo.dato.getDistancia()-menos.getDistancia())));
+				}
+			}
+		}while((miNodo=miNodo.next)!=null);
+		return null;
+	}
+	
+	public String paradas() {
+		Nodo<SubRuta> x=paradas.getHead();
+		String cadena= x.dato.getMunicipio().getNombre()+" ";
 		while(x.next!=null) {
 			x=x.next;
-			cadena=cadena+x.dato.getNombre()+" ";
+			cadena=cadena+x.dato.getMunicipio().getNombre()+" ";
 		}
 		return cadena.trim().replace(" ", "->");
+	}
+	
+	public String informacionDeRuta() {
+		Nodo<SubRuta> x=paradas.getHead();
+		String cadena= x.dato.getMunicipio().getNombre()+","+String.valueOf(x.dato.getCosto())+","+String.valueOf(x.dato.getTiempo())
+		+","+String.valueOf(x.dato.getDistancia())+" ";
+		while(x.next!=null) {
+			x=x.next;
+			cadena=cadena+x.dato.getMunicipio().getNombre()+","+String.valueOf(x.dato.getCosto())+","+String.valueOf(x.dato.getTiempo())
+			+","+String.valueOf(x.dato.getDistancia())+" ";
+		}
+		return cadena.trim().replace(" ", "->");
+	}
+	
+	public boolean menorParadas(Ruta x) {
+		if (paradas.getLen()<x.paradas.getLen()) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public boolean menorTiempo(Ruta x) {
+		if (paradas.getTailDato().getTiempo()<x.paradas.getTailDato().getTiempo()) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public boolean menorCosto(Ruta x) {
+		if (paradas.getTailDato().getCosto()<x.paradas.getTailDato().getCosto()) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 
 	@Override
     public String toString() {
-		String cadena="sin definir toString";
-        return cadena;
+		return nombre+"\n"+paradas();
     }
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((empresa == null) ? 0 : empresa.hashCode());
-		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		return result;
-	}
 
 	@Override
 	public boolean equals(Object obj) {

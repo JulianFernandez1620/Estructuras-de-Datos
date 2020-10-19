@@ -1,30 +1,28 @@
 package transcundi;
 
 public class SubRuta {
-	private String comienzo;
-	private String fin;
+	private Municipio municipio;
 	private int costo=0;
 	private int tiempo=0;
+	private int distancia=0;
 	
-	public SubRuta(String comienzo, String fin, int costo) {
-		this.comienzo = comienzo;
-		this.fin = fin;
-		this.costo = costo;
+	public SubRuta(Municipio comienzo) {
+		this.municipio = comienzo;
 	}
-	public SubRuta(String comienzo, String fin, int costo,int tiempo) {
-		this.comienzo = comienzo;
-		this.fin = fin;
+	
+	public SubRuta(Municipio comienzo, Municipio fin) {
+		this.municipio = comienzo;
+	}
+	public SubRuta(Municipio comienzo,int costo,int tiempo,int distancia) {
+		this.municipio = comienzo;
 		this.costo = costo;
 		this.tiempo=tiempo;
+		this.distancia=distancia;
 	}
 	
 	//getters
-	public String getComienzo() {
-		return comienzo;
-	}
-	
-	public String getFin() {
-		return fin;
+	public Municipio getMunicipio() {
+		return municipio;
 	}
 	
 	public int getCosto() {
@@ -34,14 +32,18 @@ public class SubRuta {
 	public int getTiempo() {
 		return tiempo;
 	}
-	//setters
 	
-	public void setComienzo(String comienzo) {
-		this.comienzo = comienzo;
+	public int getDistancia() {
+		return distancia;
 	}
 	
-	public void setFin(String fin) {
-		this.fin = fin;
+	//setters
+	public void setDistancia(int distancia) {
+		this.distancia = distancia;
+	}
+
+	public void setComienzo(Municipio comienzo) {
+		this.municipio = comienzo;
 	}
 	
 	public void setCosto(int costo) {
@@ -53,17 +55,9 @@ public class SubRuta {
 	}
 	@Override
 	public String toString() {
-		return comienzo+"->"+fin+" $"+String.valueOf(costo)+" "+String.valueOf(tiempo);
+		return municipio+" $"+String.valueOf(costo)+" "+String.valueOf(tiempo);
 	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + costo;
-		result = prime * result + ((fin == null) ? 0 : fin.hashCode());
-		result = prime * result + tiempo;
-		return result;
-	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -74,11 +68,6 @@ public class SubRuta {
 			return false;
 		SubRuta other = (SubRuta) obj;
 		if (costo != other.costo)
-			return false;
-		if (fin == null) {
-			if (other.fin != null)
-				return false;
-		} else if (!fin.equals(other.fin))
 			return false;
 		if (tiempo != other.tiempo)
 			return false;

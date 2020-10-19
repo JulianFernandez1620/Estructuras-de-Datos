@@ -9,12 +9,13 @@ public class Empresa {
 	protected ListaDinamica<Ruta> rutas;
 	protected ListaDinamica<Empleado> empleados;
 	protected ListaDinamica<Vehiculo> vehiculos;
+	protected ListaDinamica<ParadaEmpresa> terminales;
 
 	public Empresa(String nombre) {
 		this.nombre = nombre;
-		 rutas=new ListaDinamica<Ruta>();
-		 empleados= new ListaDinamica<Empleado>();
-		 vehiculos= new ListaDinamica<Vehiculo>();
+		 rutas=new ListaDinamica<Ruta>(100);
+		 empleados= new ListaDinamica<Empleado>(10);
+		 vehiculos= new ListaDinamica<Vehiculo>(10);
 	}
 
 	//getters
@@ -108,29 +109,44 @@ public class Empresa {
 	}
 	
 	public void determinarRuta(Ruta x) {
-		System.out.println(x.);
 	}
 	
 	public void ocuparVehiculo(int x,int capacidad,Ruta ruta) {
 		for (int i=0;i<vehiculos.getNumeroElementos();i++) {
 			if (vehiculos.getElemento(i).getCapacidad()>=capacidad && !vehiculos.getElemento(i).isOcupado()) {
-				ruta.buses.encolar(vehiculos.getElemento(i));
+				ruta.vehiculosEnRuta.encolar(vehiculos.getElemento(i));
 				vehiculos.getElemento(i).setOcupado();
 			}
 		}
 	}
 	
-	public void asignarHorarios() {
-		System.out.println("ingresar horarios de la ruta separado por espacios");
-		Scanner leer= new Scanner(System.in);
-		String[] x=leer.split(" ");
-		for
+	public void preguntarGetters() {
+		try {
+			System.out.println("1. empleados\n2. vehiculos\n3. Rutas\n\n4. Cerrar");
+			Scanner leer=new Scanner(System.in);
+			String x=leer.nextLine();
+			while(!x.equals("1") && !x.equals("2") && !x.equals("3") && !x.equals("4")) {
+				x=leer.nextLine();
+			}
+			if (x.equals("1")) {
+				for (int j=0;j<empleados.getNumeroElementos();j++) {
+					System.out.println(empleados.getElemento(j));
+				}
+			}else if(x.equals("2")) {
+				for (int j=0;j<vehiculos.getNumeroElementos();j++) {
+					System.out.println(vehiculos.getElemento(j));
+				}
+			}else if(x.equals("3")) {
+				for (int j=0;j<rutas.getNumeroElementos();j++) {
+					System.out.println(rutas.getElemento(j));
+				}
+			}else if(x.equals("4")) {
+				return;
+			}
+		}finally {
+			
+		}
 	}
-	
-	
-
-	public void 
-		
 	@Override
 	public String toString() {
 		String cadena="";
@@ -140,17 +156,9 @@ public class Empresa {
 			cadena=cadena+vehiculos.getElemento(j).getMatricula()+"\n";
 		}
 		for (int j=0;j<rutas.getNumeroElementos();j++) {
-			cadena=cadena+rutas.getElemento(j).ruta()+"\n";
+			cadena=cadena+rutas.getElemento(j).paradas()+"\n";
 		}
 		return this.nombre+"\n"+cadena;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-		return result;
 	}
 
 	@Override

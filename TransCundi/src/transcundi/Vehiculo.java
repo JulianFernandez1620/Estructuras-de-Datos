@@ -1,22 +1,34 @@
 package transcundi;
 
+import java.util.Scanner;
+
 public class Vehiculo {
 	private String matricula;
 	private String modelo;
 	private Imagen soat;
 	private Imagen tecnoMecanica;
 	private Imagen seguro;
-	private int capacidad;
-	private boolean ocupado;
+	private int capacidad = 10;
+	private boolean ocupado = false;
+	private ParadaEmpresa ubicacion;
 	
 	public Vehiculo(String matricula) {
 		this.matricula = matricula;
 	}
 	
 	//getters
+		
 		public String getMatricula() {
 			return matricula;
 		}
+		public ParadaEmpresa getUnbicacion() {
+			return ubicacion;
+		}
+
+		public void setUnbicacion(ParadaEmpresa unbicacion) {
+			this.ubicacion = unbicacion;
+		}
+
 		public String getModelo() {
 			return modelo;
 		}
@@ -63,9 +75,12 @@ public class Vehiculo {
 			this.ocupado = !ocupado;
 		}
 
+		public void pregunta() {
+			
+		}
 		@Override
 		public String toString() {
-			return matricula;
+			return matricula+" ocupado:"+String.valueOf(ocupado)+ " capacidad:"+String.valueOf(capacidad)+ " ubicacion:";
 		}
 
 		@Override
