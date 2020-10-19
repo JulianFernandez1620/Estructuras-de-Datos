@@ -54,7 +54,7 @@ public class P1 {
 				            }
 				        }	
 					}														
-				}	
+				}		
 		}
 		else if(opcion.equals("2"))
 			System.out.println("Bienvenido Usuario");
@@ -113,7 +113,7 @@ class Vehiculo{
 				else
 					System.out.println("El vehiculo está vacío");
 			}
-			System.out.println("El vehiculo con placas "+placa+" de la empresa "+empresa +" tiene: " +(asientos-Pilap.peek())+" asientos disponibles");	
+			System.out.println("El vehiculo con placas "+placa+" de la empresa "+empresa +" tiene: " +(asientos-1-Pilap.peek())+" asientos disponibles");	
 		
 		}
 		else {
